@@ -19,7 +19,7 @@ const transport = nodemailer.createTransport({
     transport.sendMail({
         from:"bharathreddyv2003@gmail.com",
         to:"singhnilesh852117@gmail.com",
-        text:"this is mail",
+        text:"this is mail Bharath",
         subject:"Mail to sent"
 
     })
