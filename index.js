@@ -4,7 +4,7 @@ const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 const { send } = require('process')
 
 const server = http.createServer((req, res) => {
-  res.end("Students")
+  res.end("Student")
 })
 
 const transport = nodemailer.createTransport({
