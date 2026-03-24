@@ -13,12 +13,12 @@ describe('MongoDB Tests', () => {
     // Connect to MongoDB (use a test database)
     const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/testdb';
     await mongoose.connect(mongoURI);
-  });
+  }, 10000); // Increase timeout to 10 seconds
 
   afterAll(async () => {
     // Close the connection
     await mongoose.connection.close();
-  });
+  }, 10000);
 
   beforeEach(async () => {
     // Clear the collection before each test
