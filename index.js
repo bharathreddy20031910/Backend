@@ -1,29 +1,50 @@
-const http = require('http')
-const nodemailer = require('nodemailer')
-const SendmailTransport = require('nodemailer/lib/sendmail-transport')
-const { send } = require('process')
+const express = require('express');
+const mongoose = require('mongoose');
 
-const server = http.createServer((req, res) => {
-  res.end("Students")
-})
+const app = express();
+app.use(express.json());
 
-const transport = nodemailer.createTransport({
-    service:'gmail',
-    auth:{
-        user:'bharathreddyv2003@gmail.com',
-        pass:'jgka epvt tkgb hqhx'
+// Connect to MongoDB
+if (require.main === module) {
+  mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/testdb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then(() => {
+    console.log('Connected to MongoDB');
+  }).catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
+}
+
+// Define Student schema
+const studentSchema = new mongoose.Schema({
+  name: String,
+  age: Number,
+  grade: String
+});
+
+const Student = mongoose.model('Student', studentSchema);
+
+// POST API to create a student
+app.post('/students', async (req, res) => {
+  try {
+    const { name, age, grade } = req.body;
+    if (!name || !age || !grade) {
+      return res.status(400).json({ error: 'Name, age, and grade are required' });
     }
+    const student = new Student({ name, age, grade });
+    await student.save();
+    res.status(201).json(student);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-})
+const PORT = process.env.PORT || 3000;
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-    transport.sendMail({
-        from:"bharathreddyv2003@gmail.com",
-        to:"singhnilesh852117@gmail.com",
-        text:"this is mail Bharath",
-        subject:"Mail to sent"
-
-    })
-
-server.listen(3000, () => {
-  console.log("Server running on port 3000")
-})
+module.exports = { app, Student };
