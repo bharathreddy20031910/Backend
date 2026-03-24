@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
 // Define a simple test schema
 const TestSchema = new mongoose.Schema({
@@ -9,16 +10,20 @@ const TestSchema = new mongoose.Schema({
 const TestModel = mongoose.model('Test', TestSchema);
 
 describe('MongoDB Tests', () => {
+  let mongoServer;
+
   beforeAll(async () => {
-    // Connect to MongoDB (use a test database)
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/testdb';
+    // Start in-memory MongoDB instance
+    mongoServer = await MongoMemoryServer.create();
+    const mongoURI = mongoServer.getUri();
     await mongoose.connect(mongoURI);
-  }, 10000); // Increase timeout to 10 seconds
+  }, 30000); // Increase timeout for server startup
 
   afterAll(async () => {
-    // Close the connection
+    // Close the connection and stop the server
     await mongoose.connection.close();
-  }, 10000);
+    await mongoServer.stop();
+  }, 30000);
 
   beforeEach(async () => {
     // Clear the collection before each test
