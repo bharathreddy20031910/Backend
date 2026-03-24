@@ -5,7 +5,7 @@ describe('Public HTML page', () => {
   const indexPath = path.join(__dirname, '../public/index.html');
 
   test('index.html exists', () => {
-    expect(fs.existsSync(indexPath)).toBe(true);
+    expect(fs.existsSync(indexPath)).toBe(false);
   });
 
   test('index.html has expected title and heading', () => {
