@@ -16,7 +16,6 @@ if (require.main === module) {
   });
 }
 
-// Define Student schema
 const studentSchema = new mongoose.Schema({
   name: String,
   age: Number,
