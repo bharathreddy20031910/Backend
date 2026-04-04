@@ -29,6 +29,7 @@ jobs:
 
       - name: Use Secret
         run: echo "Key is $API_KEY"
+      - run: echo "Key is $JWT_SEC"
         
 
   test:
