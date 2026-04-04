@@ -5,7 +5,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 
-// Connect to MongoDB
 if (require.main === module) {
   mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/testdb', {
     useNewUrlParser: true,
