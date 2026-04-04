@@ -28,7 +28,7 @@ jobs:
       - run: npm run build
 
       - name: Use Secret
-        run: echo "Key is $JWT_SECRET"
+        run: echo "Key is $JWT_SEC"
 
   test:
     runs-on: ubuntu-latest
@@ -40,10 +40,6 @@ jobs:
       API_KEY: ${{vars.API_KEY}}
       JWT_SEC: ${{secrets.JWT_SECRET}}
    
-
-
-    
-
     steps:
       - uses: actions/checkout@v4
 
