@@ -71,6 +71,14 @@ describe('MongoDB Tests', () => {
 });
 
 describe('API Tests', () => {
+  test('GET /health - should return ok status', async () => {
+    const response = await request(app)
+      .get('/health')
+      .expect(200);
+
+    expect(response.body).toEqual({ status: 'ok' });
+  });
+
   test('POST /students - should create a new student', async () => {
     const studentData = {
       name: 'John Doe',

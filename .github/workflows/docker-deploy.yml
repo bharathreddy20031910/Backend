@@ -1,0 +1,91 @@
+name: docker-deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      - name: Publish summary
+        run: |
+          echo "### Docker image published" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Extra tag: latest" >> "$GITHUB_STEP_SUMMARY"
+
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Trigger deployment webhook
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          DEPLOY_WEBHOOK_TOKEN: ${{ secrets.DEPLOY_WEBHOOK_TOKEN }}
+          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        run: |
+          if [ -z "$DEPLOY_WEBHOOK_URL" ]; then
+            echo "DEPLOY_WEBHOOK_URL is not configured. Skipping deploy trigger."
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            -X POST "$DEPLOY_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $DEPLOY_WEBHOOK_TOKEN" \
+            -d "{\"service\":\"backend\",\"image\":\"$IMAGE\",\"tag\":\"${{ env.IMAGE_TAG }}\",\"environment\":\"production\"}"
+
+      - name: Publish deployment summary
+        run: |
+          echo "### Deployment trigger" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Requested image tag: ${{ env.IMAGE_TAG }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Method: webhook" >> "$GITHUB_STEP_SUMMARY"

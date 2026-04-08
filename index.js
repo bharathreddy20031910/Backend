@@ -24,6 +24,10 @@ const studentSchema = new mongoose.Schema({
 
 const Student = mongoose.model('Student', studentSchema);
 
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // POST API to create a student
 app.post('/students', async (req, res) => {
   try {
