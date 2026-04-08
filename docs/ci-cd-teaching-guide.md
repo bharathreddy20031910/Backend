@@ -6,6 +6,7 @@ Use these files to explain the pipeline in a simple order:
 2. `Dockerfile`
 3. `docker-deploy.yml`
 4. `rollback.yml`
+5. `docker-local-vs-github-actions.md`
 
 ## What each file does
 
