@@ -27,6 +27,7 @@ Use these files to explain the pipeline in a simple order:
 - Builds the Docker image
 - Pushes the image to GitHub Container Registry
 - Sends a webhook to trigger deployment
+- Converts the repository name to lowercase for GHCR
 
 ### `rollback.yml`
 
