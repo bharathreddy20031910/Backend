@@ -1,18 +1,12 @@
-FROM node:20-alpine
+FROM 25-alpine3.22
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-COPY . .
-
-ENV NODE_ENV=production
-ENV PORT=3000
+COPY  package*.json ./
+RUN npm ci 
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "executable" ]
 
-CMD ["node", "index.js"]
+CMD [ "node","index.js" ]
