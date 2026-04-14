@@ -1,4 +1,4 @@
-FROM 25-alpine
+FROM 20-alpine
 
 WORKDIR /app
 
