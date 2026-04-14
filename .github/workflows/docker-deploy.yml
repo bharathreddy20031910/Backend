@@ -59,4 +59,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ steps.image-vars.outputs.image_name }}:latest ${{ env.REGISTRY }}/${{ steps.image-vars.outputs.image_name }}: ${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ steps.image-vars.outputs.image_name }}:latest ${{ env.REGISTRY }}/${{ steps.image-vars.outputs.image_name }}:${{ env.IMAGE_TAG }}
+
