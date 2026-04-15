@@ -1,12 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
+require('dotenv').config()
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhst:5444',
+  methods:['GET','POST']
+}))
+
 app.use(express.json());
 app.use(express.static('public'));
 
 if (require.main === module) {
-  mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/testdb', {
+  mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   }).then(() => {
@@ -43,7 +51,7 @@ app.post('/students', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
