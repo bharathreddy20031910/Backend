@@ -16,8 +16,10 @@ pipeline{
         }
 
         stage("Runnning"){
-            echo "Running application"
-            sh "npm start"
+            steps{
+                echo "Running application"
+            sh "pm2 start index.js --name server12"
+            }
         }
     }
 }
